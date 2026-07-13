@@ -14,6 +14,7 @@ class BaseCalendar
     constructor(preferences, languageData)
     {
         this._calendarDate = new Date();
+        this._lastOverallBalance = undefined;
         this.updateLanguageData(languageData);
         this.updatePreferences(preferences);
         this._initCalendar();
@@ -78,6 +79,7 @@ class BaseCalendar
         window.calendarApi.computeAllTimeBalanceUntilPromise(targetDate)
             .then(balance =>
             {
+                this._lastOverallBalance = balance;
                 const balanceElement = $('#overall-balance');
                 if (balanceElement)
                 {
@@ -89,6 +91,21 @@ class BaseCalendar
             {
                 console.log(err);
             });
+    }
+
+    /**
+     * Restores the last known overall balance immediately after a redraw so the field
+     * does not briefly fall back to its placeholder while the async refresh completes.
+     */
+    _restoreOverallBalance()
+    {
+        const balanceElement = $('#overall-balance');
+        if (balanceElement && this._lastOverallBalance !== undefined)
+        {
+            balanceElement.val(this._lastOverallBalance).removeClass('text-success text-danger')
+                .html(this._lastOverallBalance)
+                .addClass(TimeMath.isNegative(this._lastOverallBalance) ? 'text-danger' : 'text-success');
+        }
     }
 
     /**
@@ -191,6 +208,7 @@ class BaseCalendar
             calendar._updateTimeDayCallback($(this).attr('data-date'));
         });
 
+        this._restoreOverallBalance();
         this._updateAllTimeBalance();
     }
 
