@@ -231,6 +231,31 @@ describe('MonthCalendar class Tests', () =>
 
             assert.strictEqual(anchoredCalendar._getTargetDayForAllTimeBalance().getTime(), expectedTargetDate.getTime());
         });
+
+        it('Keeps the same overall balance value when navigating months', async() =>
+        {
+            entryStore.set('2020-3-2', {'values': ['10:00', '16:00']});
+
+            const anchoredCalendar = await CalendarFactory.getInstance(testPreferences, languageData);
+            anchoredCalendar._getTodayYear = () => 2020;
+            anchoredCalendar._getTodayMonth = () => 3;
+            anchoredCalendar._getTodayDate = () => 3;
+            anchoredCalendar._calendarDate = new Date(2020, 3, 3);
+
+            $('body').append('<span id="overall-balance"></span>');
+
+            anchoredCalendar._updateAllTimeBalance();
+            await new Promise(resolve => setTimeout(resolve, 25));
+            assert.strictEqual($('#overall-balance').val(), '-02:00');
+
+            anchoredCalendar._prevMonth();
+            anchoredCalendar._updateAllTimeBalance();
+            await new Promise(resolve => setTimeout(resolve, 25));
+            assert.strictEqual($('#overall-balance').val(), '-02:00');
+
+            entryStore.set('2020-3-2', regularEntries['2020-3-2']);
+            $('#overall-balance').remove();
+        });
     });
 
     describe('MonthCalendar RefreshOnDayChange', () =>

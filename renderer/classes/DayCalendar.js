@@ -384,7 +384,7 @@ class DayCalendar extends BaseCalendar
     }
 
     /**
-     * Updates the monthly time balance and triggers the all time balance update at end.
+     * Updates the monthly time balance.
      */
     _updateBalance()
     {

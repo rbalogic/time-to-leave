@@ -537,7 +537,6 @@ class MonthCalendar extends BaseCalendar
             balanceElement.removeClass('text-success text-danger');
             balanceElement.addClass(TimeMath.isNegative(balance) ? 'text-danger' : 'text-success');
         }
-        this._updateAllTimeBalance();
     }
 
     /*
